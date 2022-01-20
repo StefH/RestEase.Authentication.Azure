@@ -27,9 +27,6 @@ Or via the Visual Studio NuGet package manager or if you use the `dotnet` comman
     "ClientId": "c",
     "ClientSecret": "s",
     "Resource": "r",
-    "Scopes": [
-        "s"
-    ],
     "BaseAddress": "https://localhost:44318",
     "AcceptAnyServerCertificate": true,
     "TimeoutInSeconds": 99
@@ -44,15 +41,14 @@ Or via the Visual Studio NuGet package manager or if you use the `dotnet` comman
   "DocumentApiClientOptions": {
     "ClientId": "c",
     "Resource": "r",
-    "Scopes": [
-        "s"
-    ],
     "BaseAddress": "https://localhost:44318",
     "AcceptAnyServerCertificate": true,
     "TimeoutInSeconds": 99
   }
 }
 ```
+
+:arrow_right: If the `scopes` is not defined, the default the scope `{Resource}/.default` is used.
 
 ### Usage
 #### :one: Create a RestEase interface
