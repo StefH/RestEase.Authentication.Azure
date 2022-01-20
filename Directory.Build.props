@@ -1,0 +1,14 @@
+<Project>
+    <PropertyGroup>
+        <MsBuildAllProjects>$(MsBuildAllProjects);$(MsBuildThisFileFullPath)</MsBuildAllProjects>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <Version>0.0.0.1-preview-02</Version>
+
+        <Authors>Stef Heyenrath</Authors>
+        <LangVersion>10.0</LangVersion>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+</Project>

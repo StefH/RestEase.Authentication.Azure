@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+        <Title>RestEase.Authentication.Azure</Title>
+        <Description>Add AzureAd Authentication for RestEase: the easy-to-use typesafe REST API client library.</Description>
+        <PackageTags>RestEase;REST;API;Authentication;AzureAD;Azure;AppReg;ClientId;CLientSecret;ManagedIdentity</PackageTags>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <!--<PackageReleaseNotes>$([System.IO.File]::ReadAllText("$(MSBuildProjectDirectory)/../../PackageReleaseNotes.txt"))</PackageReleaseNotes>
+        <PackageReadmeFile>PackageReadme.md</PackageReadmeFile>-->
+        <PackageIcon>icon.png</PackageIcon>
+        <PackageProjectUrl>https://github.com/StefH/RestEase.Authentication.Azure</PackageProjectUrl>
+        <RepositoryType>git</RepositoryType>
+        <RepositoryUrl>https://github.com/StefH/RestEase.Authentication.Azure</RepositoryUrl>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="../../icon.png" Pack="true" PackagePath="" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Azure.Identity" Version="1.2.3" />
+        <PackageReference Include="JetBrains.Annotations" Version="2021.3.0" />
+        <PackageReference Include="Stef.Validation.Options" Version="0.1.0" />
+        <PackageReference Include="RestEase.HttpClientFactory" Version="1.5.5" />
+
+        <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="3.1.7" />
+        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.7" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.7" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.7" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.7" />
+    </ItemGroup>
+
+</Project>
