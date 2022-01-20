@@ -48,7 +48,7 @@ Or via the Visual Studio NuGet package manager or if you use the `dotnet` comman
 }
 ```
 
-:information_source: If the `scopes` is not defined, the default the scope `{Resource}/.default` is used.
+:information_source: If the `scopes`-array is not defined, the default the scope `{Resource}/.default` is used.
 
 ### Usage
 #### :one: Create a RestEase interface
