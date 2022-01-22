@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.Configuration;
+using RestEase;
 using RestEase.Authentication.Azure;
 using RestEase.Authentication.Azure.Authentication;
 using RestEase.Authentication.Azure.Http;
@@ -15,7 +16,10 @@ namespace Microsoft.Extensions.DependencyInjection;
 [PublicAPI]
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection UseWithAzureAuthenticatedRestEaseClient<T>(this IServiceCollection services, IConfigurationSection section) where T : class
+    public static IServiceCollection UseWithAzureAuthenticatedRestEaseClient<T>(
+        this IServiceCollection services,
+        IConfigurationSection section,
+        Action<RestClient>? configureRestClient = null) where T : class
     {
         Guard.NotNull(services);
         Guard.NotNull(section);
@@ -23,10 +27,13 @@ public static class ServiceCollectionExtensions
         var options = new AzureAuthenticatedRestEaseOptions<T>();
         section.Bind(options);
 
-        return services.UseWithAzureAuthenticatedRestEaseClient(options);
+        return services.UseWithAzureAuthenticatedRestEaseClient(options, configureRestClient);
     }
 
-    public static IServiceCollection UseWithAzureAuthenticatedRestEaseClient<T>(this IServiceCollection services, Action<AzureAuthenticatedRestEaseOptions<T>> configureAction) where T : class
+    public static IServiceCollection UseWithAzureAuthenticatedRestEaseClient<T>(
+        this IServiceCollection services,
+        Action<AzureAuthenticatedRestEaseOptions<T>> configureAction,
+        Action<RestClient>? configureRestClient = null) where T : class
     {
         Guard.NotNull(services);
         Guard.NotNull(configureAction);
@@ -34,10 +41,13 @@ public static class ServiceCollectionExtensions
         var options = new AzureAuthenticatedRestEaseOptions<T>();
         configureAction(options);
 
-        return services.UseWithAzureAuthenticatedRestEaseClient(options);
+        return services.UseWithAzureAuthenticatedRestEaseClient(options, configureRestClient);
     }
 
-    public static IServiceCollection UseWithAzureAuthenticatedRestEaseClient<T>(this IServiceCollection services, AzureAuthenticatedRestEaseOptions<T> options) where T : class
+    public static IServiceCollection UseWithAzureAuthenticatedRestEaseClient<T>(
+        this IServiceCollection services,
+        AzureAuthenticatedRestEaseOptions<T> options,
+        Action<RestClient>? configureRestClient = null) where T : class
     {
         Guard.NotNull(services);
         Guard.NotNull(options);
@@ -69,8 +79,10 @@ public static class ServiceCollectionExtensions
             .ConfigurePrimaryHttpMessageHandler<CustomHttpClientHandler<T>>()
             .AddHttpMessageHandler<AuthenticationHttpMessageHandler<T>>()
             .AddPolicyHandler((serviceProvider, _) => HttpClientRetryPolicies.GetPolicy<T>(serviceProvider))
-            .UseWithRestEaseClient<T>()
-            ;
+            .UseWithRestEaseClient<T>(config =>
+            {
+                configureRestClient?.Invoke(config);
+            });
 
         services.AddOptionsWithDataAnnotationValidation(options);
 
