@@ -1,6 +1,5 @@
 using System.Text.Json;
 using ConsoleAppExample.Api;
-using ConsoleAppExample.Models;
 using Microsoft.Extensions.Logging;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
@@ -36,9 +35,16 @@ internal class Worker
                 Response.Create()
                     .WithStatusCode(200)
                     .WithHeader("ContentType", "application/json")
-                    .WithBodyAsJson(new Document
+                    //.WithBodyAsJson(new Document
+                    //{
+                    //    Id = 1234,
+                    //    Title = "_t_",
+                    //    Description = "{{ request.headers.Authorization }}"
+                    //})
+                    .WithBodyAsJson(new
                     {
-                        Id = 1234,
+                        id = 1234,
+                        x = 42,
                         Title = "_t_",
                         Description = "{{ request.headers.Authorization }}"
                     })
@@ -48,12 +54,12 @@ internal class Worker
         try
         {
             var docA = await _documentApi.GetDocumentAsync(1, cancellationToken);
-            _logger.LogInformation("IDocumentApi : GetDocumentAsync = '{doc}'", JsonSerializer.Serialize(docA.GetContent(), _options));
+            _logger.LogInformation("IDocumentApi : GetDocumentAsync = '{doc}'", JsonSerializer.Serialize(docA.CurrentValue, _options));
 
             await Task.Delay(500, cancellationToken);
 
             var docB = await _documentApi.GetDocumentAsync(2, cancellationToken);
-            _logger.LogInformation("IDocumentApi : GetDocumentAsync = '{doc}'", JsonSerializer.Serialize(docB.GetContent(), _options));
+            _logger.LogInformation("IDocumentApi : GetDocumentAsync = '{doc}'", JsonSerializer.Serialize(docB.CurrentValue, _options));
         }
         catch (Exception ex)
         {

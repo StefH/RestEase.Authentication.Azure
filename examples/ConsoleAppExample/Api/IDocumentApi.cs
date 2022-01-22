@@ -1,3 +1,4 @@
+using AnyOfTypes;
 using ConsoleAppExample.Models;
 using RestEase;
 
@@ -7,5 +8,5 @@ namespace ConsoleAppExample.Api;
 public interface IDocumentApi
 {
     [Get("GetDocumentById/{id}")]
-    Task<Response<Document>> GetDocumentAsync([Path] int id, CancellationToken cancellationToken = default);
+    Task<AnyOf<Document, Response<object>>> GetDocumentAsync([Path] int id, CancellationToken cancellationToken = default);
 }
