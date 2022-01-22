@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AnyOf.Newtonsoft.Json" Version="0.3.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.7" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.7" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.7" />
@@ -15,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!--<ProjectReference Include="..\..\..\AnyOf\src\AnyOf.Newtonsoft.Json\AnyOf.Newtonsoft.Json.csproj" />-->
     <ProjectReference Include="..\..\src\RestEase.Authentication.Azure\RestEase.Authentication.Azure.csproj" />
   </ItemGroup>
 

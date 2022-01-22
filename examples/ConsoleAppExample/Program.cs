@@ -1,6 +1,8 @@
+using AnyOfTypes.Newtonsoft.Json;
 using ConsoleAppExample.Api;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
 
@@ -31,7 +33,10 @@ static class Program
 
         services.AddLogging(builder => builder.AddSerilog(logger: Log.Logger, dispose: true));
 
-        services.UseWithAzureAuthenticatedRestEaseClient<IDocumentApi>(configuration.GetSection("DocumentApiClientOptions"));
+        services
+            .UseWithAzureAuthenticatedRestEaseClient<IDocumentApi>(
+                configuration.GetSection("DocumentApiClientOptions"),
+                c => c.JsonSerializerSettings = new JsonSerializerSettings { Converters = new List<JsonConverter> { new AnyOfJsonConverter() } });
 
         services.AddSingleton<Worker>();
 
