@@ -7,8 +7,10 @@ public class AzureAuthenticatedRestEaseOptions<T> where T : class
 {
     public string? TenantId { get; set; }
 
-    [Required]
-    public string ClientId { get; set; } = null!;
+    /// <summary>
+    /// ClientId can be null, in that case the default DefaultAzureCredential will be used.
+    /// </summary>
+    public string? ClientId { get; set; }
 
     public string? ClientSecret { get; set; }
 
