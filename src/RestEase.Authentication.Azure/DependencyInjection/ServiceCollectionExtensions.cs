@@ -1,4 +1,3 @@
-using JetBrains.Annotations;
 using Microsoft.Extensions.Configuration;
 using RestEase;
 using RestEase.Authentication.Azure;
@@ -13,7 +12,6 @@ using Stef.Validation;
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection;
 
-[PublicAPI]
 public static class ServiceCollectionExtensions
 {
     public static IServiceCollection UseWithAzureAuthenticatedRestEaseClient<T>(
@@ -71,7 +69,7 @@ public static class ServiceCollectionExtensions
         services
             .AddTransient<AuthenticationHttpMessageHandler<T>>()
             .AddTransient<CustomHttpClientHandler<T>>()
-            .AddHttpClient(options.HttpClientName, httpClient =>
+            .AddHttpClient(options.HttpClientName!, httpClient =>
             {
                 httpClient.BaseAddress = options.BaseAddress;
                 httpClient.Timeout = TimeSpan.FromSeconds(options.TimeoutInSeconds);

@@ -1,6 +1,6 @@
-using System.Text.Json;
 using ConsoleAppExample.Api;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
 using WireMock.Server;
@@ -9,11 +9,6 @@ namespace ConsoleAppExample;
 
 internal class Worker
 {
-    private readonly JsonSerializerOptions _options = new()
-    {
-        WriteIndented = true
-    };
-
     private readonly IDocumentApi _documentApi;
     private readonly ILogger<Worker> _logger;
 
@@ -53,13 +48,18 @@ internal class Worker
 
         try
         {
-            var docA = await _documentApi.GetDocumentAsync(1, cancellationToken);
-            _logger.LogInformation("IDocumentApi : GetDocumentAsync = '{doc}'", JsonSerializer.Serialize(docA.CurrentValue, _options));
+            var doc1 = await _documentApi.GetDocumentAsync(1, cancellationToken);
+            _logger.LogInformation("IDocumentApi : GetDocumentAsync = '{doc}'", JsonConvert.SerializeObject(doc1.CurrentValue, Formatting.Indented));
 
-            await Task.Delay(500, cancellationToken);
+            await Task.Delay(1000, cancellationToken);
 
-            var docB = await _documentApi.GetDocumentAsync(2, cancellationToken);
-            _logger.LogInformation("IDocumentApi : GetDocumentAsync = '{doc}'", JsonSerializer.Serialize(docB.CurrentValue, _options));
+            var doc2 = await _documentApi.GetDocumentAsync(2, cancellationToken);
+            _logger.LogInformation("IDocumentApi : GetDocumentAsync = '{doc}'", JsonConvert.SerializeObject(doc2.CurrentValue, Formatting.Indented));
+
+            await Task.Delay(1000, cancellationToken);
+
+            var doc3 = await _documentApi.GetDocumentAsync(3, cancellationToken);
+            _logger.LogInformation("IDocumentApi : GetDocumentAsync = '{doc}'", JsonConvert.SerializeObject(doc3.CurrentValue, Formatting.Indented));
         }
         catch (Exception ex)
         {

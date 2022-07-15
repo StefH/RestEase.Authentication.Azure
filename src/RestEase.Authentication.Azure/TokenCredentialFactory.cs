@@ -1,13 +1,13 @@
-﻿using Azure.Core;
+using Azure.Core;
 using Azure.Identity;
 using Microsoft.Extensions.Options;
 using RestEase.Authentication.Azure.Interfaces;
 using RestEase.Authentication.Azure.Options;
 using Stef.Validation;
 
-// See https://azuresdkdocs.blob.core.windows.net/$web/dotnet/Azure.Identity/1.0.0/api/index.html
 namespace RestEase.Authentication.Azure;
 
+// See https://github.com/Azure/azure-sdk-for-net/blob/Azure.Identity_1.6.0/sdk/identity/Azure.Identity/README.md
 internal class TokenCredentialFactory<T> : ITokenCredentialFactory<T> where T : class
 {
     private readonly AzureAuthenticatedRestEaseOptions<T> _options;
@@ -18,7 +18,7 @@ internal class TokenCredentialFactory<T> : ITokenCredentialFactory<T> where T : 
     {
         _options = Guard.NotNull(options.Value);
 
-        _tokenCredential = new Lazy<TokenCredential>(CreateCredentialInternal);
+        _tokenCredential = new Lazy<TokenCredential>(CreateChainedTokenCredential);
     }
 
     public TokenCredential CreateCredential()
@@ -26,7 +26,7 @@ internal class TokenCredentialFactory<T> : ITokenCredentialFactory<T> where T : 
         return _tokenCredential.Value;
     }
 
-    private TokenCredential CreateCredentialInternal()
+    private TokenCredential CreateChainedTokenCredential()
     {
         var sources = new List<TokenCredential>();
 
@@ -36,8 +36,14 @@ internal class TokenCredentialFactory<T> : ITokenCredentialFactory<T> where T : 
             sources.Add(new ClientSecretCredential(_options.TenantId, _options.ClientId, _options.ClientSecret));
         }
 
-        // 2. Authenticate using ManagedIdentityCredential
-        sources.Add(new ManagedIdentityCredential(_options.ClientId));
+        // 2. If ClientId is defined, add DefaultAzureCredential with the ManagedIdentityClientId
+        if (!string.IsNullOrEmpty(_options.ClientId))
+        {
+            sources.Add(new DefaultAzureCredential(new DefaultAzureCredentialOptions { ManagedIdentityClientId = _options.ClientId }));
+        }
+
+        // 3. Always authenticate using DefaultAzureCredential
+        sources.Add(new DefaultAzureCredential());
 
         return new ChainedTokenCredential(sources.ToArray());
     }
