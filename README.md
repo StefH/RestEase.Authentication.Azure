@@ -34,12 +34,25 @@ Or via the Visual Studio NuGet package manager or if you use the `dotnet` comman
 }
 ```
 
-### Configuration when using a Managed Service Identity
+### Configuration when using a Managed Identity with a ClientId
 #### appsettings.json
 ``` json
 {
   "DocumentApiClientOptions": {
     "ClientId": "c",
+    "Resource": "r",
+    "BaseAddress": "https://localhost:44318",
+    "AcceptAnyServerCertificate": true,
+    "TimeoutInSeconds": 99
+  }
+}
+```
+
+### Configuration when using a Managed Identity without a ClientId (it will fall back to DefaultAzureCredential)
+#### appsettings.json
+``` json
+{
+  "DocumentApiClientOptions": {
     "Resource": "r",
     "BaseAddress": "https://localhost:44318",
     "AcceptAnyServerCertificate": true,
