@@ -2,6 +2,7 @@ using Azure.Core;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using RestEase.Authentication.Azure.Extensions;
 using RestEase.Authentication.Azure.Interfaces;
 using RestEase.Authentication.Azure.Options;
 using Stef.Validation;
@@ -28,24 +29,33 @@ internal class AccessTokenService<T> : IAccessTokenService<T> where T : class
         _tokenCredential = new Lazy<TokenCredential>(factory.CreateCredential);
     }
 
-    public Task<string> GetTokenAsync(string resource, CancellationToken cancellationToken = default)
+    public Task<string> GetTokenAsync(string resource, CancellationToken cancellationToken = default) =>
+        GetTokenAsync(resource, false, cancellationToken);
+
+    public Task<string> GetTokenAsync(string resource, bool forceRefresh, CancellationToken cancellationToken = default)
     {
         Guard.NotNullOrEmpty(resource);
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        return
-            _cache.GetOrCreateAsync(GetKey(resource), async entry =>
-            {
-                var scopes = _options.Scopes ?? CreateScopes(resource);
-                _logger.LogDebug("Getting new AccessToken for resource '{resource}' and scopes '{scopes}'.", resource, string.Join(",", scopes));
+        Task<string> GetAccessTokenAsync(ICacheEntry entry) => GetTokenInternalAsync(resource, entry, cancellationToken);
 
-                var tokenRequestContext = new TokenRequestContext(scopes);
-                var accessToken = await _tokenCredential.Value.GetTokenAsync(tokenRequestContext, cancellationToken).ConfigureAwait(false);
+        return forceRefresh ?
+            _cache.CreateAsync(GetKey(resource), GetAccessTokenAsync) :
+            _cache.GetOrCreateAsync(GetKey(resource), GetAccessTokenAsync);
+    }
 
-                entry.AbsoluteExpiration = accessToken.ExpiresOn;
-                return accessToken.Token;
-            });
+    private async Task<string> GetTokenInternalAsync(string resource, ICacheEntry entry, CancellationToken cancellationToken)
+    {
+        var scopes = _options.Scopes ?? CreateScopes(resource);
+        _logger.LogDebug("Getting new AccessToken for resource '{resource}' and scopes '{scopes}'.", resource,
+            string.Join(",", scopes));
+
+        var tokenRequestContext = new TokenRequestContext(scopes);
+        var accessToken = await _tokenCredential.Value.GetTokenAsync(tokenRequestContext, cancellationToken).ConfigureAwait(false);
+
+        entry.AbsoluteExpiration = accessToken.ExpiresOn;
+        return accessToken.Token;
     }
 
     private string GetKey(string resource)

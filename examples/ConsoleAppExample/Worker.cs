@@ -24,7 +24,25 @@ internal class Worker
 
         server
             .Given(
-                Request.Create().UsingGet()
+                Request.Create().UsingGet().WithPath("/api/no-access")
+            )
+            .RespondWith(
+                Response.Create()
+                    .WithStatusCode(401)
+                    .WithHeader("ContentType", "application/json")
+                    .WithBodyAsJson(new
+                    {
+                        id = 1234,
+                        x = 42,
+                        Title = "is 401",
+                        Description = "{{ request.headers.Authorization }}"
+                    })
+                    .WithTransformer()
+            );
+
+        server
+            .Given(
+                Request.Create().UsingGet().WithPath("/api/GetDocumentById/*")
             )
             .RespondWith(
                 Response.Create()
@@ -40,7 +58,7 @@ internal class Worker
                     {
                         id = 1234,
                         x = 42,
-                        Title = "_t_",
+                        Title = "is 200",
                         Description = "{{ request.headers.Authorization }}"
                     })
                     .WithTransformer()
@@ -60,6 +78,11 @@ internal class Worker
 
             var doc3 = await _documentApi.GetDocumentAsync(3, cancellationToken);
             _logger.LogInformation("IDocumentApi : GetDocumentAsync = '{doc}'", JsonConvert.SerializeObject(doc3.CurrentValue, Formatting.Indented));
+
+            await Task.Delay(1000, cancellationToken);
+
+            var doc = await _documentApi.NoAccessAsync(cancellationToken);
+            _logger.LogInformation("IDocumentApi : NoAccessAsync = '{doc}'", JsonConvert.SerializeObject(doc.CurrentValue, Formatting.Indented));
         }
         catch (Exception ex)
         {
