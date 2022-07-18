@@ -48,8 +48,7 @@ internal class AccessTokenService<T> : IAccessTokenService<T> where T : class
     private async Task<string> GetTokenInternalAsync(string resource, ICacheEntry entry, CancellationToken cancellationToken)
     {
         var scopes = _options.Scopes ?? CreateScopes(resource);
-        _logger.LogDebug("Getting new AccessToken for resource '{resource}' and scopes '{scopes}'.", resource,
-            string.Join(",", scopes));
+        _logger.LogDebug("Getting new AccessToken for resource '{resource}' and scopes '{scopes}'.", resource, string.Join(",", scopes));
 
         var tokenRequestContext = new TokenRequestContext(scopes);
         var accessToken = await _tokenCredential.Value.GetTokenAsync(tokenRequestContext, cancellationToken).ConfigureAwait(false);
