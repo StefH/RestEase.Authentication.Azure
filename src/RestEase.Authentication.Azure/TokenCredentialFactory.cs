@@ -28,7 +28,7 @@ internal class TokenCredentialFactory<T> : ITokenCredentialFactory<T> where T : 
 
     private TokenCredential CreateChainedTokenCredential()
     {
-        // 1. If TenantId, ClientId, Username and ClientSecret are Password, use UsernamePasswordCredential.
+        // 1. If TenantId, ClientId, Username and Password are defined, use UsernamePasswordCredential.
         if (!string.IsNullOrEmpty(_options.TenantId) && !string.IsNullOrEmpty(_options.ClientId) && !string.IsNullOrEmpty(_options.Username) && !string.IsNullOrEmpty(_options.Password))
         {
             return new UsernamePasswordCredential(_options.Username, _options.Password, _options.TenantId, _options.ClientId);
