@@ -48,12 +48,6 @@ internal class Worker
                 Response.Create()
                     .WithStatusCode(200)
                     .WithHeader("ContentType", "application/json")
-                    //.WithBodyAsJson(new Document
-                    //{
-                    //    Id = 1234,
-                    //    Title = "_t_",
-                    //    Description = "{{ request.headers.Authorization }}"
-                    //})
                     .WithBodyAsJson(new
                     {
                         id = 1234,

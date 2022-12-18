@@ -64,6 +64,6 @@ internal class AccessTokenService<T> : IAccessTokenService<T> where T : class
 
     private static string[] CreateScopes(string resource)
     {
-        return new[] { $"{resource}/.default" };
+        return new[] { string.Intern($"{resource}/.default") };
     }
 }
