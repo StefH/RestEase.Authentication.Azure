@@ -29,28 +29,43 @@ internal class AccessTokenService<T> : IAccessTokenService<T> where T : class
         _tokenCredential = new Lazy<TokenCredential>(factory.CreateCredential);
     }
 
-    public Task<string> GetTokenAsync(string resource, CancellationToken cancellationToken = default) =>
-        GetTokenAsync(resource, false, cancellationToken);
+    public Task<string> GetTokenAsync(string resource, CancellationToken cancellationToken = default)
+    {
+        return GetTokenInternalAndStoreInCacheAsync(Guard.NotNullOrEmpty(resource), null, false, cancellationToken);
+    }
+
+    public Task<string> GetTokenAsync(string resource, string[] scopes, CancellationToken cancellationToken = default)
+    {
+        return GetTokenInternalAndStoreInCacheAsync(Guard.NotNullOrEmpty(resource), Guard.NotNull(scopes), false, cancellationToken);
+    }
 
     public Task<string> GetTokenAsync(string resource, bool forceRefresh, CancellationToken cancellationToken = default)
     {
-        Guard.NotNullOrEmpty(resource);
-
-        cancellationToken.ThrowIfCancellationRequested();
-
-        Task<string> GetAccessTokenAsync(ICacheEntry entry) => GetTokenInternalAsync(resource, entry, cancellationToken);
-
-        return forceRefresh ?
-            _cache.CreateAsync(GetKey(resource), GetAccessTokenAsync) :
-            _cache.GetOrCreateAsync(GetKey(resource), GetAccessTokenAsync);
+        return GetTokenInternalAndStoreInCacheAsync(Guard.NotNullOrEmpty(resource), null, forceRefresh, cancellationToken);
     }
 
-    private async Task<string> GetTokenInternalAsync(string resource, ICacheEntry entry, CancellationToken cancellationToken)
+    public Task<string> GetTokenAsync(string resource, string[] scopes, bool forceRefresh, CancellationToken cancellationToken = default)
     {
-        var scopes = _options.Scopes ?? CreateScopes(resource);
-        _logger.LogDebug("Getting new AccessToken for resource '{resource}' and scopes '{scopes}'.", resource, string.Join(",", scopes));
+        return GetTokenInternalAndStoreInCacheAsync(Guard.NotNullOrEmpty(resource), Guard.NotNull(scopes), forceRefresh, cancellationToken);
+    }
 
-        var tokenRequestContext = new TokenRequestContext(scopes);
+    private Task<string> GetTokenInternalAndStoreInCacheAsync(string resource, string[]? scopes, bool forceRefresh, CancellationToken cancellationToken)
+    {
+        Task<string> GetAccessTokenAsync(ICacheEntry entry) => GetTokenInternalAsync(resource, scopes, entry, cancellationToken);
+
+        return forceRefresh
+            ? _cache.CreateAsync(GetKey(resource), GetAccessTokenAsync)
+            : _cache.GetOrCreateAsync(GetKey(resource), GetAccessTokenAsync);
+    }
+
+    private async Task<string> GetTokenInternalAsync(string resource, string[]? scopes, ICacheEntry entry, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var scopesToUse = scopes ?? _options.Scopes ?? CreateScopes(resource);
+        _logger.LogDebug("Getting new AccessToken for resource '{resource}' and scopes '{scopes}'.", resource, string.Join(",", scopesToUse));
+
+        var tokenRequestContext = new TokenRequestContext(scopesToUse);
         var accessToken = await _tokenCredential.Value.GetTokenAsync(tokenRequestContext, cancellationToken).ConfigureAwait(false);
 
         entry.AbsoluteExpiration = accessToken.ExpiresOn;
