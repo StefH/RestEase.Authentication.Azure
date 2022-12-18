@@ -28,23 +28,19 @@ internal class TokenCredentialFactory<T> : ITokenCredentialFactory<T> where T : 
 
     private TokenCredential CreateChainedTokenCredential()
     {
-        var sources = new List<TokenCredential>();
+        // 1. If TenantId, ClientId, Username and ClientSecret are Password, use UsernamePasswordCredential.
+        if (!string.IsNullOrEmpty(_options.TenantId) && !string.IsNullOrEmpty(_options.ClientId) && !string.IsNullOrEmpty(_options.Username) && !string.IsNullOrEmpty(_options.Password))
+        {
+            return new UsernamePasswordCredential(_options.Username, _options.Password, _options.TenantId, _options.ClientId);
+        }
 
-        // 1. If TenantId, ClientId and ClientSecret are defined, add ClientSecretCredential as first
+        // 2. If TenantId, ClientId and ClientSecret are defined, use ClientSecretCredential.
         if (!string.IsNullOrEmpty(_options.TenantId) && !string.IsNullOrEmpty(_options.ClientId) && !string.IsNullOrEmpty(_options.ClientSecret))
         {
-            sources.Add(new ClientSecretCredential(_options.TenantId, _options.ClientId, _options.ClientSecret));
+            return new ClientSecretCredential(_options.TenantId, _options.ClientId, _options.ClientSecret);
         }
 
-        // 2. If ClientId is defined, add DefaultAzureCredential with the ManagedIdentityClientId
-        if (!string.IsNullOrEmpty(_options.ClientId))
-        {
-            sources.Add(new DefaultAzureCredential(new DefaultAzureCredentialOptions { ManagedIdentityClientId = _options.ClientId }));
-        }
-
-        // 3. Always authenticate using DefaultAzureCredential
-        sources.Add(new DefaultAzureCredential());
-
-        return new ChainedTokenCredential(sources.ToArray());
+        // 3. Else authenticate using DefaultAzureCredential
+        return new DefaultAzureCredential();
     }
 }
