@@ -64,7 +64,6 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ITokenCredentialFactory<T>, TokenCredentialFactory<T>>();
         services.AddSingleton<IAccessTokenService<T>, AccessTokenService<T>>();
 
-
         // HttpClient and RestEase services
         services
             .AddTransient<AuthenticationHttpMessageHandler<T>>()
