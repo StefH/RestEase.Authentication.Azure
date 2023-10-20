@@ -22,7 +22,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Azure.Identity" Version="1.6.0" />
+        <PackageReference Include="Azure.Identity" Version="1.10.2" />
         
         <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
         <PackageReference Include="Stef.Validation.Options" Version="0.1.0" />
