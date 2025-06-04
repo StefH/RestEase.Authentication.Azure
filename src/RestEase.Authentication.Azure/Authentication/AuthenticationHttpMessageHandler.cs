@@ -1,3 +1,4 @@
+using System.Net.Http;
 using System.Net.Http.Headers;
 using Microsoft.Extensions.Options;
 using RestEase.Authentication.Azure.Interfaces;
