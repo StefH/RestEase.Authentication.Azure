@@ -4,6 +4,7 @@
 An extension to [RestEase](https://github.com/canton7/RestEase) which adds AzureAd Authentication.
 
 Supported modes are:
+- Username + Pasword
 - Client with ClientSecret
 - Managed Identity
 
