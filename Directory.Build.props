@@ -5,7 +5,7 @@
 
     <PropertyGroup>
         <Authors>Stef Heyenrath</Authors>
-        <LangVersion>10.0</LangVersion>
+        <LangVersion>latest</LangVersion>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>

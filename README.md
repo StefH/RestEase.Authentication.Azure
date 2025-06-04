@@ -1,14 +1,15 @@
 ![Project Icon](icon.png) RestEase.Authentication.Azure
 ==================================
 
-An extension to [RestEase](https://github.com/canton7/RestEase) which adds AzureAd Authentication.
+An extension to [RestEase](https://github.com/canton7/RestEase) which adds Microsoft Entra ID (Azure AD) Authentication.
 
 Supported modes are:
+- Username + Pasword
 - Client with ClientSecret
 - Managed Identity
 
 ## Install
-[![NuGet Badge](https://buildstats.info/nuget/RestEase.Authentication.Azure)](https://www.nuget.org/packages/RestEase.Authentication.Azure)
+[![NuGet Badge](https://img.shields.io/nuget/v/RestEase.Authentication.Azure)](https://www.nuget.org/packages/RestEase.Authentication.Azure)
 
 You can install from NuGet using the following command in the package manager window:
 
@@ -61,7 +62,7 @@ Or via the Visual Studio NuGet package manager or if you use the `dotnet` comman
 }
 ```
 
-:information_source: If the `scopes`-array is not defined, the default the scope `{Resource}/.default` is used.
+:bulb: If the `scopes`-array is not defined, the default the scope `{Resource}/.default` is used.
 
 ### Usage
 #### :one: Create a RestEase interface

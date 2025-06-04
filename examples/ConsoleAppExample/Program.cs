@@ -36,7 +36,7 @@ static class Program
         services
             .UseWithAzureAuthenticatedRestEaseClient<IDocumentApi>(
                 configuration.GetSection("DocumentApiClientOptions"),
-                c => c.JsonSerializerSettings = new JsonSerializerSettings { Converters = new List<JsonConverter> { new AnyOfJsonConverter() } });
+                c => c.JsonSerializerSettings = new JsonSerializerSettings { Converters = new List<Newtonsoft.Json.JsonConverter> { new AnyOfJsonConverter() } });
 
         services.AddSingleton<Worker>();
 
@@ -48,6 +48,7 @@ static class Program
         return new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json")
+            .AddJsonFile("appsettings.Development.json", optional: true)
             .AddEnvironmentVariables()
             .AddCommandLine(args)
             .Build();
