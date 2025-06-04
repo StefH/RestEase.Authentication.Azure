@@ -1,7 +1,7 @@
 ![Project Icon](icon.png) RestEase.Authentication.Azure
 ==================================
 
-An extension to [RestEase](https://github.com/canton7/RestEase) which adds AzureAd Authentication.
+An extension to [RestEase](https://github.com/canton7/RestEase) which adds Microsoft Entra ID (Azure AD) Authentication.
 
 Supported modes are:
 - Username + Pasword
