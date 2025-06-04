@@ -5,15 +5,34 @@ namespace RestEase.Authentication.Azure.Options;
 // ReSharper disable once UnusedTypeParameter
 public class AzureAuthenticatedRestEaseOptions<T> where T : class
 {
+    /// <summary>
+    /// Gets or sets the Azure Active Directory Tenant. [Optional]
+    /// </summary>
     public string? TenantId { get; set; }
 
     /// <summary>
-    /// ClientId can be null, in that case the default DefaultAzureCredential will be used.
+    /// Gets or sets the Microsoft Entra ID application (Client / ManagedIdentity) Id. [Optional]
     /// </summary>
     public string? ClientId { get; set; }
 
+    /// <summary>
+    /// Gets or sets the Microsoft Entra ID application (Client / ManagedIdentity) secret. [Optional]
+    /// </summary>
     public string? ClientSecret { get; set; }
 
+    /// <summary>
+    /// Gets or sets the username for username/password authentication. [Optional]
+    /// </summary>
+    public string? Username { get; set; }
+
+    /// <summary>
+    /// Gets or sets the password for username/password authentication. [Optional]
+    /// </summary>
+    public string? Password { get; set; }
+
+    /// <summary>
+    /// Gets or sets the cache key prefix used for storing access tokens. [Optional]
+    /// </summary>
     public string? AccessTokenCacheKeyPrefix { get; set; }
 
     [Required]

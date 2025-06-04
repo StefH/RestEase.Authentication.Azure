@@ -1,9 +1,9 @@
 using Azure.Core;
 using Azure.Identity;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RestEase.Authentication.Azure.Interfaces;
 using RestEase.Authentication.Azure.Options;
-using Stef.Validation;
 
 namespace RestEase.Authentication.Azure;
 
@@ -11,14 +11,14 @@ namespace RestEase.Authentication.Azure;
 internal class TokenCredentialFactory<T> : ITokenCredentialFactory<T> where T : class
 {
     private readonly AzureAuthenticatedRestEaseOptions<T> _options;
-
+    private readonly ILogger<TokenCredentialFactory<T>> _logger;
     private readonly Lazy<TokenCredential> _tokenCredential;
 
-    public TokenCredentialFactory(IOptions<AzureAuthenticatedRestEaseOptions<T>> options)
+    public TokenCredentialFactory(ILogger<TokenCredentialFactory<T>> logger, IOptions<AzureAuthenticatedRestEaseOptions<T>> options)
     {
-        _options = Guard.NotNull(options.Value);
-
-        _tokenCredential = new Lazy<TokenCredential>(CreateChainedTokenCredential);
+        _logger = logger;
+        _options = options.Value;
+        _tokenCredential = new Lazy<TokenCredential>(BuildTokenCredential);
     }
 
     public TokenCredential CreateCredential()
@@ -26,25 +26,36 @@ internal class TokenCredentialFactory<T> : ITokenCredentialFactory<T> where T : 
         return _tokenCredential.Value;
     }
 
-    private TokenCredential CreateChainedTokenCredential()
+    private TokenCredential BuildTokenCredential()
     {
-        var sources = new List<TokenCredential>();
+        // 1. If TenantId, ClientId, Username and Password are defined, use UsernamePasswordCredential
+        if (!string.IsNullOrEmpty(_options.TenantId) && !string.IsNullOrEmpty(_options.ClientId) && !string.IsNullOrEmpty(_options.Username) && !string.IsNullOrEmpty(_options.Password))
+        {
+            _logger.LogInformation("Using TokenCredential '{TokenCredential}' for ClientId '{ClientId}'", nameof(UsernamePasswordCredential), _options.ClientId);
+            return new UsernamePasswordCredential(_options.Username, _options.Password, _options.TenantId, _options.ClientId);
+        }
 
-        // 1. If TenantId, ClientId and ClientSecret are defined, add ClientSecretCredential as first
+        // 2. If TenantId, ClientId and ClientSecret are defined, use ClientSecretCredential
         if (!string.IsNullOrEmpty(_options.TenantId) && !string.IsNullOrEmpty(_options.ClientId) && !string.IsNullOrEmpty(_options.ClientSecret))
         {
-            sources.Add(new ClientSecretCredential(_options.TenantId, _options.ClientId, _options.ClientSecret));
+            _logger.LogInformation("Using TokenCredential '{TokenCredential}' for ClientId '{ClientId}'", nameof(ClientSecretCredential), _options.ClientId);
+            return new ClientSecretCredential(_options.TenantId, _options.ClientId, _options.ClientSecret);
         }
 
-        // 2. If ClientId is defined, add DefaultAzureCredential with the ManagedIdentityClientId
+        // 3. If ClientId is defined, use DefaultAzureCredential with ManagedIdentityClientId
+        // - https://learn.microsoft.com/en-us/dotnet/api/azure.identity.defaultazurecredential?view=azure-dotnet#examples
+        // - https://github.com/Azure/azure-sdk-for-net/issues/35128
         if (!string.IsNullOrEmpty(_options.ClientId))
         {
-            sources.Add(new DefaultAzureCredential(new DefaultAzureCredentialOptions { ManagedIdentityClientId = _options.ClientId }));
+            _logger.LogInformation("Using TokenCredential '{TokenCredential}' for ManagedIdentityClientId '{ManagedIdentityClientId}'", nameof(DefaultAzureCredential), options.ClientId);
+            return new DefaultAzureCredential(new DefaultAzureCredentialOptions
+            {
+                ManagedIdentityClientId = _options.ClientId
+            });
         }
 
-        // 3. Always authenticate using DefaultAzureCredential
-        sources.Add(new DefaultAzureCredential());
-
-        return new ChainedTokenCredential(sources.ToArray());
+        // 4. Default option, use DefaultAzureCredential
+        _logger.LogInformation("Using TokenCredential '{TokenCredential}'", nameof(DefaultAzureCredential));
+        return new DefaultAzureCredential();
     }
 }
