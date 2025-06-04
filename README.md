@@ -8,7 +8,7 @@ Supported modes are:
 - Managed Identity
 
 ## Install
-[![NuGet Badge](https://buildstats.info/nuget/RestEase.Authentication.Azure)](https://www.nuget.org/packages/RestEase.Authentication.Azure)
+[![NuGet Badge](https://img.shields.io/nuget/v/RestEase.Authentication.Azure)](https://www.nuget.org/packages/RestEase.Authentication.Azure)
 
 You can install from NuGet using the following command in the package manager window:
 
