@@ -9,25 +9,15 @@ using Stef.Validation;
 
 namespace RestEase.Authentication.Azure;
 
-internal class AccessTokenService<T> : IAccessTokenService<T> where T : class
+internal class AccessTokenService<T>(
+    ILogger<AccessTokenService<T>> logger,
+    IOptions<AzureAuthenticatedRestEaseOptions<T>> options,
+    ITokenCredentialFactory<T> factory,
+    IMemoryCache cache) : IAccessTokenService<T>
+    where T : class
 {
-    private readonly ILogger<AccessTokenService<T>> _logger;
-    private readonly AzureAuthenticatedRestEaseOptions<T> _options;
-    private readonly IMemoryCache _cache;
-    private readonly Lazy<TokenCredential> _tokenCredential;
-
-    public AccessTokenService(
-        ILogger<AccessTokenService<T>> logger,
-        IOptions<AzureAuthenticatedRestEaseOptions<T>> options,
-        ITokenCredentialFactory<T> factory,
-        IMemoryCache cache)
-    {
-        _logger = Guard.NotNull(logger);
-        _cache = Guard.NotNull(cache);
-        _options = Guard.NotNull(options.Value);
-
-        _tokenCredential = new Lazy<TokenCredential>(factory.CreateCredential);
-    }
+    private readonly AzureAuthenticatedRestEaseOptions<T> _options = options.Value;
+    private readonly Lazy<TokenCredential> _tokenCredential = new(factory.CreateCredential);
 
     public Task<string> GetTokenAsync(string resource, CancellationToken cancellationToken = default) =>
         GetTokenAsync(resource, false, cancellationToken);
@@ -38,17 +28,15 @@ internal class AccessTokenService<T> : IAccessTokenService<T> where T : class
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        Task<string> GetAccessTokenAsync(ICacheEntry entry) => GetTokenInternalAsync(resource, entry, cancellationToken);
+        return forceRefresh ? cache.CreateAsync(GetKey(resource), GetAccessTokenAsync) : cache.GetOrCreateAsync(GetKey(resource), GetAccessTokenAsync)!;
 
-        return forceRefresh ?
-            _cache.CreateAsync(GetKey(resource), GetAccessTokenAsync) :
-            _cache.GetOrCreateAsync(GetKey(resource), GetAccessTokenAsync);
+        Task<string> GetAccessTokenAsync(ICacheEntry entry) => GetTokenInternalAsync(resource, entry, cancellationToken);
     }
 
     private async Task<string> GetTokenInternalAsync(string resource, ICacheEntry entry, CancellationToken cancellationToken)
     {
         var scopes = _options.Scopes ?? CreateScopes(resource);
-        _logger.LogDebug("Getting new AccessToken for resource '{resource}' and scopes '{scopes}'.", resource, string.Join(",", scopes));
+        logger.LogDebug("Getting new AccessToken for resource '{resource}' and scopes '{scopes}'.", resource, string.Join(",", scopes));
 
         var tokenRequestContext = new TokenRequestContext(scopes);
         var accessToken = await _tokenCredential.Value.GetTokenAsync(tokenRequestContext, cancellationToken).ConfigureAwait(false);
@@ -64,6 +52,6 @@ internal class AccessTokenService<T> : IAccessTokenService<T> where T : class
 
     private static string[] CreateScopes(string resource)
     {
-        return new[] { string.Intern($"{resource}/.default") };
+        return [string.Intern($"{resource}/.default")];
     }
 }

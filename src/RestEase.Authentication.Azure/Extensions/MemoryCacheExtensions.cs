@@ -11,7 +11,7 @@ internal static class MemoryCacheExtensions
         Guard.NotNull(key);
 
         using var entry = cache.CreateEntry(key);
-        var value = (entry.Value = await factory(entry).ConfigureAwait(false));
+        var value = entry.Value = await factory(entry).ConfigureAwait(false);
 
         return (TItem)value;
     }
