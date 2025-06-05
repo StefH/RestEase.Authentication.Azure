@@ -1,3 +1,6 @@
+# 0.3.1 (05 June 2025)
+- [#7](https://github.com/StefH/RestEase.Authentication.Azure/pull/7) - Add LogRequest, LogResponse and WriteIndented to options [enhancement] contributed by [StefH](https://github.com/StefH)
+
 # 0.3.0 (04 June 2025)
 - [#6](https://github.com/StefH/RestEase.Authentication.Azure/pull/6) - Add .NET 8 [enhancement] contributed by [StefH](https://github.com/StefH)
 
