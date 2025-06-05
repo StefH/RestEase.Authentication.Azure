@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using RestEase;
 using RestEase.Authentication.Azure;
 using RestEase.Authentication.Azure.Authentication;
@@ -60,10 +61,14 @@ public static class ServiceCollectionExtensions
             options.AccessTokenCacheKeyPrefix = typeof(T).FullName;
         }
 
+        if (options.LogRequest || options.LogResponse)
+        {
+            services.AddTransient<CustomHttpLoggingHandler<T>>();
+        }
+
         // Azure services
         services.AddSingleton<ITokenCredentialFactory<T>, TokenCredentialFactory<T>>();
         services.AddSingleton<IAccessTokenService<T>, AccessTokenService<T>>();
-
 
         // HttpClient and RestEase services
         services
@@ -75,11 +80,17 @@ public static class ServiceCollectionExtensions
                 httpClient.Timeout = TimeSpan.FromSeconds(options.TimeoutInSeconds);
             })
             .ConfigurePrimaryHttpMessageHandler<CustomHttpClientHandler<T>>()
+            .AddCustomHttpLoggingHandler(options)
             .AddHttpMessageHandler<AuthenticationHttpMessageHandler<T>>()
             .AddPolicyHandler((serviceProvider, _) => HttpClientRetryPolicies.GetPolicy<T>(serviceProvider))
             .UseWithRestEaseClient<T>(config =>
             {
                 configureRestClient?.Invoke(config);
+
+                if (config.JsonSerializerSettings != null && options.WriteJsonIndented != null)
+                {
+                    config.JsonSerializerSettings.Formatting = options.WriteJsonIndented.Value ? Formatting.Indented : Formatting.None;
+                }
             });
 
         services.AddOptionsWithDataAnnotationValidation(options);

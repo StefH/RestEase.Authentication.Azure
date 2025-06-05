@@ -56,4 +56,22 @@ public class AzureAuthenticatedRestEaseOptions<T> where T : class
     /// </summary>
     [Range(1, int.MaxValue)]
     public int TimeoutInSeconds { get; set; } = 60;
+
+    /// <summary>
+    /// Log the request as Debug Logging.
+    /// Default value is <c>false</c>;
+    /// </summary>
+    public bool LogRequest { get; set; }
+
+    /// <summary>
+    /// Log the response as Debug Logging.
+    /// Default value is <c>false</c>;
+    /// </summary>
+    public bool LogResponse { get; set; }
+
+    /// <summary>
+    /// Write the request json as indented.
+    /// Default value is <c>null</c>;
+    /// </summary>
+    public bool? WriteJsonIndented { get; set; }
 }
