@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <Version>0.3.1</Version>
+        <Version>0.3.2</Version>
         <TargetFrameworks>netstandard2.0;netstandard2.1;net6.0;net8.0;net48</TargetFrameworks>
         <Title>RestEase.Authentication.Azure</Title>
         <Description>Add AzureAd Authentication for RestEase: the easy-to-use typesafe REST API client library.</Description>
@@ -11,6 +11,8 @@
         <PackageProjectUrl>https://github.com/StefH/RestEase.Authentication.Azure</PackageProjectUrl>
         <RepositoryType>git</RepositoryType>
         <RepositoryUrl>https://github.com/StefH/RestEase.Authentication.Azure</RepositoryUrl>
+        <PackageReleaseNotes>$([System.IO.File]::ReadAllText("$(MSBuildProjectDirectory)/../../PackageReleaseNotes.txt"))</PackageReleaseNotes>
+        <PackageReadmeFile>PackageReadme.md</PackageReadmeFile>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)' == 'Release'">
@@ -19,6 +21,7 @@
 
     <ItemGroup>
         <None Include="../../icon.png" Pack="true" PackagePath="" />
+        <None Include="../../PackageReadme.md" Pack="true" PackagePath="" />
     </ItemGroup>
 
     <ItemGroup Condition=" '$(TargetFramework)' != 'net8.0' ">

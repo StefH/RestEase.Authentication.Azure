@@ -9,7 +9,7 @@
     <ItemGroup>
         <PackageReference Include="AnyOf.Newtonsoft.Json" Version="0.5.0" />
         <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
-        <PackageReference Include="WireMock.Net" Version="1.8.9" />
+        <PackageReference Include="WireMock.Net.Minimal" Version="1.8.9" />
     </ItemGroup>
 
     <ItemGroup>

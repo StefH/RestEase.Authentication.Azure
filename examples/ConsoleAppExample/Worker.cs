@@ -35,7 +35,7 @@ internal class Worker
                         id = 1234,
                         x = 42,
                         Title = "is 401",
-                        Description = "{{ request.headers.Authorization }}"
+                        Authorization = "{{ request.headers.Authorization }}"
                     })
                     .WithTransformer()
             );
@@ -53,7 +53,7 @@ internal class Worker
                         id = 1234,
                         x = 42,
                         Title = "is 200",
-                        Description = "{{ request.headers.Authorization }}"
+                        Authorization = "{{ request.headers.Authorization }}"
                     })
                     .WithTransformer()
             );
