@@ -1,3 +1,6 @@
+# 0.3.2 (07 June 2025)
+- [#8](https://github.com/StefH/RestEase.Authentication.Azure/pull/8) - Add PackageReadme [enhancement] contributed by [StefH](https://github.com/StefH)
+
 # 0.3.1 (05 June 2025)
 - [#7](https://github.com/StefH/RestEase.Authentication.Azure/pull/7) - Add LogRequest, LogResponse and WriteIndented to options [enhancement] contributed by [StefH](https://github.com/StefH)
 

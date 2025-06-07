@@ -73,3 +73,6 @@ services.UseWithAzureAuthenticatedRestEaseClient<IDocumentApi>(configuration.Get
 IDocumentApi documentApi = ...; // Injected
 var document = await documentApi.GetDocumentAsync(1, cancellationToken);
 ```
+
+### 🌐 Links
+- See also: [RestEase.Authentication](https://github.com/StefH/RestEase.Authentication)

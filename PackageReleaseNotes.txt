@@ -1,0 +1,4 @@
+# 0.3.2 (07 June 2025)
+- #8 Add PackageReadme [enhancement]
+
+The full release notes can be found here: https://github.com/StefH/RestEase.Authentication.Azure/blob/main/ReleaseNotes.md
