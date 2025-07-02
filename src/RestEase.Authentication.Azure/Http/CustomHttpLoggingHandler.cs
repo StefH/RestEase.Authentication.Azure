@@ -11,20 +11,18 @@ internal class CustomHttpLoggingHandler<T>(ILogger<CustomHttpLoggingHandler<T>> 
     {
         if (options.Value.LogRequest)
         {
-            logger.LogInformation("Request: {Method} {Uri}", request.Method, request.RequestUri);
             if (request.Content != null)
             {
-                var requestContent = await ReadContentAsStringAsync(request.Content, cancellationToken);
+                var requestContent = await ReadContentAsStringAsync(request.Content, cancellationToken).ConfigureAwait(false);
                 logger.LogDebug("Request Content: {Content}", requestContent);
             }
         }
 
         if (options.Value.LogResponse)
         {
-            var response = await base.SendAsync(request, cancellationToken);
-            logger.LogInformation("Response: {StatusCode} {Uri}", response.StatusCode, response.RequestMessage?.RequestUri);
+            var response = await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
 
-            var responseContent = await ReadContentAsStringAsync(response.Content, cancellationToken);
+            var responseContent = await ReadContentAsStringAsync(response.Content, cancellationToken).ConfigureAwait(false);
             logger.LogDebug("Response Content: {Content}", responseContent);
 
             return response;
@@ -41,9 +39,9 @@ internal class CustomHttpLoggingHandler<T>(ILogger<CustomHttpLoggingHandler<T>> 
         }
 
 #if NETSTANDARD2_0 || NETSTANDARD2_1 || NET48
-        return await content.ReadAsStringAsync();
+        return await content.ReadAsStringAsync().ConfigureAwait(false);
 #else
-        return await content.ReadAsStringAsync(cancellationToken);
+        return await content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 #endif
     }
 }

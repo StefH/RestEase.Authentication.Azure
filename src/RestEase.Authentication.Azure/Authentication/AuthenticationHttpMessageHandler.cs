@@ -45,7 +45,7 @@ internal class AuthenticationHttpMessageHandler<T>(IOptions<AzureAuthenticatedRe
         if (!string.IsNullOrWhiteSpace(_options.ApiManagementSubscriptionOptions.QueryParameterName) && request.RequestUri != null)
         {
             var query = HttpUtility.ParseQueryString(request.RequestUri.Query);
-            query[_options.ApiManagementSubscriptionOptions.QueryParameterName] = _options.ApiManagementSubscriptionOptions.Key;
+            query.Add(_options.ApiManagementSubscriptionOptions.QueryParameterName, _options.ApiManagementSubscriptionOptions.Key);
 
             var uriBuilder = new UriBuilder(request.RequestUri)
             {

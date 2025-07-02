@@ -9,7 +9,6 @@ using RestEase.Authentication.Azure.Options;
 using RestEase.Authentication.Azure.RetryPolicies;
 using RestEase.HttpClientFactory;
 using Stef.Validation;
-using Stef.Validation.Options;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection;
@@ -74,7 +73,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IAccessTokenService<T>, AccessTokenService<T>>();
 
         // HttpClient and RestEase services
-        services
+        var httpClientBuilder = services
             .AddTransient<AuthenticationHttpMessageHandler<T>>()
             .AddTransient<CustomHttpClientHandler<T>>()
             .AddHttpClient(options.HttpClientName!, httpClient =>
@@ -96,8 +95,27 @@ public static class ServiceCollectionExtensions
                 }
             });
 
+#if NET8_0_OR_GREATER
+        if (!string.IsNullOrWhiteSpace(options.ApiManagementSubscriptionOptions?.QueryParameterName))
+        {
+            httpClientBuilder.ConfigureSanitizedLogging(o => o.RequestUriReplacements.Add(GetUriReplacements(options.ApiManagementSubscriptionOptions)));
+        }
+#endif
+
         services.AddMemoryCache();
 
+#if !NET8_0_OR_GREATER
+        if (!string.IsNullOrWhiteSpace(options.ApiManagementSubscriptionOptions?.QueryParameterName))
+        {
+            services.UseSanitizedHttpLogger(o => o.RequestUriReplacements.Add(GetUriReplacements(options.ApiManagementSubscriptionOptions!)));
+        }
+#endif
+
         return services;
+    }
+
+    private static KeyValuePair<string, string> GetUriReplacements(ApiManagementSubscriptionOptions options)
+    {
+        return new KeyValuePair<string, string>($"(?i){options.QueryParameterName}=[^&]*", $"{options.QueryParameterName}=***");
     }
 }
