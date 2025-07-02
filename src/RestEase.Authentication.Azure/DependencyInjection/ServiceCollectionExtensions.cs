@@ -9,6 +9,7 @@ using RestEase.Authentication.Azure.Options;
 using RestEase.Authentication.Azure.RetryPolicies;
 using RestEase.HttpClientFactory;
 using Stef.Validation;
+using Stef.Validation.Options;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection;
@@ -51,6 +52,8 @@ public static class ServiceCollectionExtensions
         Guard.NotNull(services);
         Guard.NotNull(options);
 
+        services.AddOptionsWithDataAnnotationValidation(options);
+
         if (string.IsNullOrEmpty(options.HttpClientName))
         {
             options.HttpClientName = typeof(T).FullName;
@@ -92,8 +95,6 @@ public static class ServiceCollectionExtensions
                     config.JsonSerializerSettings.Formatting = options.WriteJsonIndented.Value ? Formatting.Indented : Formatting.None;
                 }
             });
-
-        services.AddOptionsWithDataAnnotationValidation(options);
 
         services.AddMemoryCache();
 

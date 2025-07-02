@@ -35,7 +35,9 @@ internal class Worker
                         id = 1234,
                         x = 42,
                         Title = "is 401",
-                        Authorization = "{{ request.headers.Authorization }}"
+                        QueryKey = "{{ request.query.sub }}",
+                        OcpApimSubscriptionKey = "{{ request.headers.Ocp-Apim-Subscription-Key }}",
+                        Authorization = "{{ request.headers.Authorization }}",
                     })
                     .WithTransformer()
             );
@@ -53,6 +55,8 @@ internal class Worker
                         id = 1234,
                         x = 42,
                         Title = "is 200",
+                        QueryKey = "{{ request.query.sub }}",
+                        OcpApimSubscriptionKey = "{{ request.headers.Ocp-Apim-Subscription-Key }}",
                         Authorization = "{{ request.headers.Authorization }}"
                     })
                     .WithTransformer()
@@ -60,17 +64,19 @@ internal class Worker
 
         try
         {
-            var doc1 = await _documentApi.GetDocumentAsync(1, cancellationToken);
+            var guid = Guid.NewGuid().ToString();
+
+            var doc1 = await _documentApi.GetDocumentAsync(1, guid, cancellationToken);
             _logger.LogInformation("IDocumentApi : GetDocumentAsync = '{doc}'", JsonConvert.SerializeObject(doc1.CurrentValue, Formatting.Indented));
 
             await Task.Delay(1000, cancellationToken);
 
-            var doc2 = await _documentApi.GetDocumentAsync(2, cancellationToken);
+            var doc2 = await _documentApi.GetDocumentAsync(2, guid, cancellationToken);
             _logger.LogInformation("IDocumentApi : GetDocumentAsync = '{doc}'", JsonConvert.SerializeObject(doc2.CurrentValue, Formatting.Indented));
 
             await Task.Delay(1000, cancellationToken);
 
-            var doc3 = await _documentApi.GetDocumentAsync(3, cancellationToken);
+            var doc3 = await _documentApi.GetDocumentAsync(3, guid, cancellationToken);
             _logger.LogInformation("IDocumentApi : GetDocumentAsync = '{doc}'", JsonConvert.SerializeObject(doc3.CurrentValue, Formatting.Indented));
 
             await Task.Delay(1000, cancellationToken);
