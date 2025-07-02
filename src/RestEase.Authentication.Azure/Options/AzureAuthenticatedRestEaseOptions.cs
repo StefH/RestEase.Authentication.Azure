@@ -74,4 +74,10 @@ public class AzureAuthenticatedRestEaseOptions<T> where T : class
     /// Default value is <c>null</c>;
     /// </summary>
     public bool? WriteJsonIndented { get; set; }
+
+    /// <summary>
+    /// Define additional Azure API Management Subscription options.
+    /// </summary>
+    [HeaderOrQueryRequired]
+    public ApiManagementSubscriptionOptions? ApiManagementSubscriptionOptions { get; set; }
 }
