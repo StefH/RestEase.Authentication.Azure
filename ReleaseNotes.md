@@ -1,3 +1,6 @@
+# 0.3.3 (02 July 2025)
+- [#10](https://github.com/StefH/RestEase.Authentication.Azure/pull/10) - Add support for Azure Api Management Subscription Options [enhancement] contributed by [StefH](https://github.com/StefH)
+
 # 0.3.2 (07 June 2025)
 - [#8](https://github.com/StefH/RestEase.Authentication.Azure/pull/8) - Add PackageReadme [enhancement] contributed by [StefH](https://github.com/StefH)
 

@@ -1,4 +1,4 @@
-# 0.3.2 (07 June 2025)
-- #8 Add PackageReadme [enhancement]
+# 0.3.3 (02 July 2025)
+- #10 Add support for Azure Api Management Subscription Options [enhancement]
 
 The full release notes can be found here: https://github.com/StefH/RestEase.Authentication.Azure/blob/main/ReleaseNotes.md
